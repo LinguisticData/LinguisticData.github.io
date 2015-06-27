@@ -39,6 +39,7 @@ function browseData() {
   var table = [];
   var _header = rows[0].split('\t');
   var header = [];
+  var all_tags = [];
   for (var i=0;i<_header.length; i++) {
     header.push(_header[i].slice(1,_header[i].length-1));
   }
@@ -55,36 +56,47 @@ function browseData() {
     var langs = cells[4];
     var pubs = cells[5];
 
+    tags = tags.split(/, */);
+    tags.sort();
+    for (var t=0,tag; tag=tags[t]; t++) {
+      if (all_tags.indexOf(t) == -1) {
+	all_tags.push(t);
+      }
+    }
+    tags = tags.join(', ');
+
+
     DATA[i] = {};
     DATA[i]['description'] = desc;
     DATA[i]['publication'] = pubs;
   
-    if (desc != '') {
-      desc = '<span id="description_'+i+'">'+desc.slice(0,40)+'<span style="color:Crimson;cursor:pointer" onclick="showItem('+i+',\'description\')"> ...MORE</span></span>';
-    }
-    if (pubs != '') {
-      pubs = '<span id="publication_'+i+'">'+pubs.slice(0,40)+'<span style="color:Crimson;cursor:pointer" onclick="showItem('+i+',\'publication\')"> ...MORE</span></span>';
-    }
+    //if (desc != '') {
+    //  desc = '<span id="description_'+i+'">'+desc.slice(0,100)+'<span style="color:Crimson;cursor:pointer" onclick="showItem('+i+',\'description\')"> ...MORE</span></span>';
+    //}
     
-    table.push([i,res,desc,tags,langs,pubs]);
+    //if (pubs != '') {
+    //  pubs = '<span id="publication_'+i+'">'+pubs.slice(0,40)+'<span style="color:Crimson;cursor:pointer" onclick="showItem('+i+',\'publication\')"> ...MORE</span></span>';
+    //}
+    
+    table.push([i,res,desc,tags,langs]);
   }
   console.log(_header);
   console.log('header',header);
   
   gm.innerHTML = '<table cellpadding="0" cellspacing="0" border="0" class="display" id="example"></table>';
   
-  $('#example').dataTable( {
+  document.getElementById('dsource-number').innerHTML = table.length;
+
+  var table = $('#example').dataTable( {
     "data" : table,
     "columns" : [
-      {"title" : "NUMBER", "class" : "small-table"},
-      {"title" : "TITLE", "class" : "large-table"},
-      {"title" : "DESCRIPTION"},
-      {"title" : "TAGS"},
-      {"title" : "LANGUAGES"},
-      {"title" : "PUBLICATION", "class": "small-table"},
+      {"title" : "", "class" : "number-table", "searchable" : false},
+      {"title" : "TITLE", "class" : "title-table"},
+      {"title" : "DESCRIPTION", "class" : "description-table"},
+      {"title" : "TAGS", "class": "tags-table"},
+      {"title" : "LANGUAGES", "class" : "languages-table"},
       ]
   });
-
 
   console.log(table);
 
