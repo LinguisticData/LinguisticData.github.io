@@ -38,12 +38,14 @@
 <a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>Introduction</h3>
 
 	<p>This page provides links to several linguistic databases and datasets. We want to facilitate finding data sources that are relevant to your research question. And we want you to explore what is out there in the world of freely available linguistic web data.
-    </p><p>
-    At present, the Goldmine features <strong><span id="dsource-number">XX</span> data sources</strong>, including... <br>
-          &emsp;&emsp;&emsp;... corpora of all varieties<br>
-          &emsp;&emsp;&emsp;... normed data, ratings, reaction times<br>
-          &emsp;&emsp;&emsp;... typological datasets<br>  
-          </p>
+    </p>
+    <p>
+    At present, the Goldmine features <strong><span id="dsource-number">XX</span> data
+      sources</strong>, including:    <ul>
+      <li>corpora of all varieties</li>
+      <li>normed data, ratings, reaction times</li>
+      <li>typological datasets</li>  </ul>
+  </p>
 
           <p>
           When using any of the data, make sure to cite the data source appropriately, given the website's specifications!
@@ -52,8 +54,8 @@
 <h3>
 <a name="contact" class="anchor" href="#goldmine"><span class="octicon
     octicon-link"></span></a>Goldmine</h3>
-<button id="browse" onclick="browseData()">SHOW DATA</button>
-<button id="browse" onclick="hideData()">HIDE DATA</button>
+<button id="browse1" onclick="browseData()">SHOW DATA</button>
+<button id="browse3" onclick="showTags()">SHOW KEYWORDS</button>
 <div id="goldmine"></div>
 
         <h3>
@@ -63,6 +65,7 @@
           
     
       </section>
+      <!--<iframe src="http://lingulist.de/tracker.py" style="width:1px;height:1px;"></iframe>-->
       <footer>
         <p><small>This webapp was created by <a href="http://lingulist.de">Johann-Mattis List</a> and 
 <a href="http://www.bodowinter.com">Bodo Winter</a>. The data we present has been collected by
@@ -72,5 +75,7 @@
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
     <script src="javascripts/linguisticdata.js" type="text/javascript"> </script>
     <script>browseData();</script>
+
+
   </body>
 </html>

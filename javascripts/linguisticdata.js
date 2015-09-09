@@ -10,9 +10,53 @@
 var STORE = '';
 var CFG = {};
 var DATA = {};
+var TAGS = {};
+var COOCS = {};
 
+function showTags() {
+  tags = Object.keys(TAGS);
+  tags.sort();
+  txt = '<table id="tags"><thead><tr><th>TAG</th><th>FREQUENCY</th><th>COOCCURRENCES</th><th>BROWSE</th></tr></thead><tbody>';
+  for (var i=0,tag; tag=tags[i]; i++) {
+    txt += '<tr><td>'+tag+'</td><td>'+TAGS[tag]+'</td>';
+    txt += '<td>';
+    if (tag in COOCS) {
+      var tmp = [];
+      for (key in COOCS[tag]) {
+	tmp.push([COOCS[tag][key], key]);
+      }
+      tmp.sort(function (x,y) { return y - x;});
+      
+      for (var k=0; k < tmp.length; k++) {
+	txt += '<a style="cursor:pointer;" onclick="browseData(\''+tag+';'+tmp[k][1]+'\')">'+tmp[k][1] + '</a> ('+tmp[k][0]+')';
+	if (k != tmp.length-1) {
+	  txt += ', ';
+	}
+      }
+    }
+	
 
-function browseData() {
+    txt += '<td><button onclick="browseData(\''+tag+'\')">SHOW</button></td></tr>';
+  }
+  txt += '</tbody></table>';
+  document.getElementById('goldmine').innerHTML = txt;
+  $('#tags').dataTable();
+}
+function browseData(keyword) {
+
+  /* empty coocs and tags */
+  COOCS = {};
+  TAGS = {};
+
+  if (typeof keyword == 'undefined') {
+    keyword = false;
+  }
+  else if (keyword.indexOf(';') != -1) {
+    keyword = keyword.split(';');
+  }
+  else {
+    keyword = [keyword];
+  }
 
   console.log('starting to browse');
   
@@ -63,22 +107,49 @@ function browseData() {
 	all_tags.push(t);
       }
     }
+    for (var k=0,tag; tag=tags[k]; k++) {
+      if (tag in TAGS) {
+	TAGS[tag] += 1;
+      }
+      else {
+	TAGS[tag] = 1;
+      }
+      for (var l=0,tag2; tag2=tags[l]; l++) {
+	if (tag != tag2) {
+	  if (!(tag in COOCS)) {
+	    COOCS[tag] = {};
+	  }
+	  if (tag2 in COOCS[tag]) {
+	    COOCS[tag][tag2] += 1;
+	  }
+	  else {
+	    COOCS[tag][tag2] = 1;
+	  }
+	}
+      }
+    }
+
     tags = tags.join(', ');
 
 
     DATA[i] = {};
     DATA[i]['description'] = desc;
     DATA[i]['publication'] = pubs;
-  
-    //if (desc != '') {
-    //  desc = '<span id="description_'+i+'">'+desc.slice(0,100)+'<span style="color:Crimson;cursor:pointer" onclick="showItem('+i+',\'description\')"> ...MORE</span></span>';
-    //}
     
-    //if (pubs != '') {
-    //  pubs = '<span id="publication_'+i+'">'+pubs.slice(0,40)+'<span style="color:Crimson;cursor:pointer" onclick="showItem('+i+',\'publication\')"> ...MORE</span></span>';
-    //}
+    /* check for keyword stuff */
+    var use_this_row=true;
+    if (keyword) {
+      for (var k=0; k < keyword.length; k++) {
+	if (tags.toLowerCase().split(', ').indexOf(keyword[k].toLowerCase()) == -1) {
+	  use_this_row = false;
+	  break;
+	}
+      }
+    }
     
-    table.push([i,res,desc,tags,langs]);
+    //if (!keyword || use_this_row) {
+      table.push([i,res,desc,tags,langs]);
+    //}
   }
   console.log(_header);
   console.log('header',header);
@@ -86,7 +157,7 @@ function browseData() {
   gm.innerHTML = '<table cellpadding="0" cellspacing="0" border="0" class="display" id="example"></table>';
   
   document.getElementById('dsource-number').innerHTML = table.length;
-
+  
   var table = $('#example').dataTable( {
     "data" : table,
     "columns" : [
@@ -97,6 +168,12 @@ function browseData() {
       {"title" : "LANGUAGES", "class" : "languages-table"},
       ]
   });
+  
+  if (keyword) {
+    keyword.sort();
+    var keywords = keyword.join(', ');
+    table.fnFilter(keywords, 3);
+  }
 
   console.log(table);
 
