@@ -16,7 +16,7 @@ var COOCS = {};
 function showTags() {
   tags = Object.keys(TAGS);
   tags.sort();
-  txt = '<table id="tags"><thead><tr><th>TAG</th><th>FREQUENCY</th><th>COOCCURRENCES</th><th>BROWSE</th></tr></thead><tbody>';
+  txt = '<table id="tags"><thead><tr><th>TAG</th><th>FREQUENCY</th><th>COOCCURRENCES</th></tr></thead><tbody>';
   for (var i=0,tag; tag=tags[i]; i++) {
     txt += '<tr><td>'+tag+'</td><td>'+TAGS[tag]+'</td>';
     txt += '<td>';
@@ -28,7 +28,8 @@ function showTags() {
       tmp.sort(function (x,y) { return y - x;});
       
       for (var k=0; k < tmp.length; k++) {
-	txt += '<a style="cursor:pointer;" onclick="browseData(\''+tag+';'+tmp[k][1]+'\')">'+tmp[k][1] + '</a> ('+tmp[k][0]+')';
+	txt += '<a style="cursor:pointer;" onclick="filterData(\''+tag+';'+tmp[k][1]+'\')">'+tmp[k][1]+'</a> ('+tmp[k][0]+')';
+	  //onclick="browseData(\''+tag+';'+tmp[k][1]+'\')">'+tmp[k][1] + '</a> ('+tmp[k][0]+')';
 	if (k != tmp.length-1) {
 	  txt += ', ';
 	}
@@ -36,10 +37,10 @@ function showTags() {
     }
 	
 
-    txt += '<td><button onclick="browseData(\''+tag+'\')">SHOW</button></td></tr>';
+    txt += '</tr>';
   }
   txt += '</tbody></table>';
-  document.getElementById('goldmine').innerHTML = txt;
+  document.getElementById('keywords').innerHTML = txt;
   $('#tags').dataTable();
 
   autoComplete('tags_filter');
@@ -157,7 +158,14 @@ function browseData(keyword) {
   
   document.getElementById('dsource-number').innerHTML = table.length;
   
-  var table = $('#example').dataTable( {
+  if (keyword) {
+    var searchterm = keyword.join(', ');
+  }
+  else {
+    var searchterm = '';
+  }
+
+  dtable = $('#example').dataTable( {
     "data" : table,
     "columns" : [
       {"title" : "", "class" : "number-table", "searchable" : false},
@@ -165,18 +173,18 @@ function browseData(keyword) {
       {"title" : "DESCRIPTION", "class" : "description-table"},
       {"title" : "TAGS", "class": "tags-table"},
       {"title" : "LANGUAGES", "class" : "languages-table"},
-      ]
+      ],
+      search : { search : searchterm }
   });
-  
-  if (keyword) {
-    keyword.sort();
-    var keywords = keyword.join(', ');
-    table.fnFilter(keywords, 3);
-  }
 
   autoComplete('example_filter');
 
+}
 
+function filterData(data) {
+  
+  browseData(data);
+  tabs.tabs('option', 'active', 1);
 }
 
 /* hide the data-table */
@@ -241,3 +249,5 @@ function autoComplete(idx) {
         }
       });
 }
+
+
